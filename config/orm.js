@@ -12,7 +12,7 @@ function burgerArr(num) {
 }
 
 //convert object key/value pairs to SQL syntax
-function objToSql(ob) {
+function toSql(ob) {
     var arr = [];
 
     //iterate through keys and push the key/value as a string int arr
@@ -65,12 +65,12 @@ var orm = {
             cb(result);
         });
     },
-    // An example of objColVals would be {burger_name: cheeseburger, devoured: true}
+    // sho full table valus and condition, update
     updateOne: function (table, objColVals, condition, callBack) {
         var queryString = "UPDATE " + table;
 
         queryString += " SET ";
-        queryString += objToSql(objColVals);
+        queryString += toSql(objColVals);
         queryString += " WHERE ";
         queryString += condition;
 

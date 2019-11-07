@@ -18,8 +18,13 @@
   },
   "homepage": "https://github.com/chantal-o/burger#readme",
   "dependencies": {
+    "core-util-is": "^1.0.2",
     "express": "^4.17.1",
     "express-handlebars": "^3.1.0",
-    "mysql": "^2.17.1"
+    "mysql": "^2.17.1",
+    "node": "^12.13.0"
+  },
+  "devDependencies": {
+    "eslint": "^6.6.0"
   }
 }
