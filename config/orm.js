@@ -1,91 +1,57 @@
-var connection = require("../config/connection.js");
+//connection 
+var connection = require("./connection");
 
-//creates an array
-function burgerArr(num) {
+//method returns a boolean indicating whether the object has the specified property as its own property (as opposed to inheriting it).
+//convert object to a string so it can be used in the db query
+function toString(obj) {
     var arr = [];
 
-    for (var i = 0; i < num; i++) {
-        arr.push("?");
-    }
-
-    return arr.toString();
-}
-
-//convert object key/value pairs to SQL syntax
-function toSql(ob) {
-    var arr = [];
-
-    //iterate through keys and push the key/value as a string int arr
-    for (var key in ob) {
-        var value = ob[key];
-        // check to skip hidden properties
-        if (Object.hasOwnProperty.call(ob, key)) {
-            if (typeof value === "string" && value.indexOf(" ") >= 0) {
-                value = "'" + value + "'";
-            }
-
+    for(var key in obj) {
+        var value = obj[key];
+        if(Object.hasOwnProperty.call(obj, key)) {
             arr.push(key + "=" + value);
         }
     }
-
-    // return comma-separated string
     return arr.toString();
 }
 
-// Query data within database
 var orm = {
-    selectAll: function (tableInput, callBack) {
-        var queryString = 'SELECT * FROM ' + tableInput + ';';
-        connection.query(queryString, function (err, results) {
-            if (err) {
-                throw err;
-            }
-            callBack(results)
+    // 
+    // Method wil use parameters to make select query and put enteries in db
+    all: function(tName, cb) {
+        var queryString = `SELECT * FROM ${tName}`;
+        connection.query(queryString, function(err, result) {
+            if(err) throw err;
+            cb(result);
         });
     },
 
-    // Insert one item into database table
-    insertOne: function (table, cols, vals, cb) {
-        var queryString = "INSERT INTO " + table;
-
-        queryString += " (";
-        queryString += cols.toString();
-        queryString += ") ";
-        queryString += "VALUES (";
-        queryString += burgerArr(vals.length);
-        queryString += ") ";
-
+   
+    // Method will take in parameters and use them to query db and add entries
+    insert: function(tableName, col, val, cb) {
+        // Template to build INSERT db query
+        var queryString = `INSERT INTO ${tableName} (${col}) VALUES ("${val}")`;
         console.log(queryString);
-
-        connection.query(queryString, vals, function (err, result) {
-            if (err) {
-                throw err;
-            }
+        
+        connection.query(queryString, function(err, result) {
+            if(err) throw err;
 
             cb(result);
         });
     },
-    // sho full table valus and condition, update
-    updateOne: function (table, objColVals, condition, callBack) {
-        var queryString = "UPDATE " + table;
 
-        queryString += " SET ";
-        queryString += toSql(objColVals);
-        queryString += " WHERE ";
-        queryString += condition;
-
+    // Method that takes in table name, a column/value pair, condition, and call back function as parameters
+    // It will then use these params to query the db and update the specified entry
+    update: function(tableName, colVal, condition, cb) {
+        var queryString = `UPDATE ${tableName} SET ${toString(colVal)} WHERE ${condition}`;
         console.log(queryString);
-        connection.query(queryString, function (err, result) {
-            if (err) {
-                throw err;
-            }
-
-            callBack(result);
+        
+        connection.query(queryString, function(err, result) {
+            if(err) throw err;
+            cb(result);
         });
-    } 
+    }
 };
 
-
-
-//Export the orm object for burger.js
-module.exports = orm
+// Export orm 
+module.exports = orm;
